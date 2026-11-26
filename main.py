@@ -16,14 +16,19 @@ ENTRY = (
 OUTPUT_PATH = "/output/entry.txt"
 
 
-def main() -> None:
-    line = ENTRY
-    assert 1 <= len(line) <= 140, f"entry length {len(line)} out of range 1..140"
-    assert line == line.strip(), "entry has leading/trailing whitespace"
-    assert "\n" not in line and "\r" not in line, "entry must be exactly one line"
-    assert all(ord(ch) >= 32 and ord(ch) != 127 for ch in line), (
+def validate(text: str) -> str:
+    """Check the entry line is a single printable line of 1..140 chars."""
+    assert 1 <= len(text) <= 140, f"entry length {len(text)} out of range 1..140"
+    assert text == text.strip(), "entry has leading/trailing whitespace"
+    assert "\n" not in text and "\r" not in text, "entry must be exactly one line"
+    assert all(ord(ch) >= 32 and ord(ch) != 127 for ch in text), (
         "entry contains control characters"
     )
+    return text
+
+
+def main() -> None:
+    line = validate(ENTRY)
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(line + "\n")
